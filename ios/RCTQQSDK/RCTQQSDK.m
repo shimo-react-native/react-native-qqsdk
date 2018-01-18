@@ -54,10 +54,12 @@ RCT_EXPORT_MODULE()
              @"Favorite": @(Favorite),
              };
 }
+
 RCT_EXPORT_METHOD(checkClientInstalled
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
-    if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
+    if (([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin])
+        || ([TencentOAuth iphoneTIMInstalled] && [TencentOAuth iphoneTIMSupportSSOLogin])){
         resolve(@YES);
     } else {
         reject(@"404", QQ_NOT_INSTALLED, nil);

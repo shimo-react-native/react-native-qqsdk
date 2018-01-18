@@ -317,4 +317,8 @@ GitHub.sublime-settings
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+# Mac OS
+.DS_Store
+
 # End of https://www.gitignore.io/api/android,carthage,fastlane,java,jetbrains,objective-c,swift,webstorm,sublimetext
+
