@@ -9,6 +9,7 @@
 #import "RCTQQSDK.h"
 
 NSString *QQ_NOT_INSTALLED = @"QQ Client is not installed";
+NSString *TIM_NOT_INSTALLED = @"Tim Client is not installed";
 NSString *QQ_LOGIN_ERROR = @"QQ login error";
 NSString *QQ_LOGIN_CANCEL = @"QQ login cancelled";
 NSString *QQ_IMAGE_PARAM_INCORRECT = @"image param is incorrect";
@@ -54,10 +55,32 @@ RCT_EXPORT_MODULE()
              @"Favorite": @(Favorite),
              };
 }
-RCT_EXPORT_METHOD(checkClientInstalled
+
+RCT_EXPORT_METHOD(checkQQInstalled
                   :(RCTPromiseResolveBlock)resolve
                   :(RCTPromiseRejectBlock)reject) {
     if ([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin]) {
+        resolve(@YES);
+    } else {
+        reject(@"404", TIM_NOT_INSTALLED, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(checkTimInstalled
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    if ([TencentOAuth iphoneTIMInstalled] && [TencentOAuth iphoneTIMSupportSSOLogin]) {
+        resolve(@YES);
+    } else {
+        reject(@"404", QQ_NOT_INSTALLED, nil);
+    }
+}
+
+RCT_EXPORT_METHOD(checkClientInstalled
+                  :(RCTPromiseResolveBlock)resolve
+                  :(RCTPromiseRejectBlock)reject) {
+    if (([TencentOAuth iphoneQQInstalled] && [TencentOAuth iphoneQQSupportSSOLogin])
+        || ([TencentOAuth iphoneTIMInstalled] && [TencentOAuth iphoneTIMSupportSSOLogin])){
         resolve(@YES);
     } else {
         reject(@"404", QQ_NOT_INSTALLED, nil);

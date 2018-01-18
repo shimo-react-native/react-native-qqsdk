@@ -28,7 +28,6 @@ import com.tencent.connect.common.Constants;
 import com.tencent.connect.share.QQShare;
 import com.tencent.connect.share.QzonePublish;
 import com.tencent.connect.share.QzoneShare;
-import com.tencent.open.GameAppOperation;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.Tencent;
 import com.tencent.tauth.UiError;
@@ -56,7 +55,6 @@ import static android.content.ContentValues.TAG;
 class ShareScene {
     public static final int QQ = 0;
     public static final int QQZone = 1;
-    public static final int Favorite = 2;
 }
 
 public class QQSDK extends ReactContextBaseJavaModule {
@@ -70,8 +68,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
     private static final String QQ_RESPONSE_ERROR = "QQ response is error";
     private static final String QQ_CANCEL_BY_USER = "cancelled by user";
     private static final String QZONE_SHARE_CANCEL = "QZone share is cancelled";
-    private static final String QQFAVORITES_CANCEL = "QQ Favorites is cancelled";
-
 
     private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
 
@@ -83,9 +79,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 }
                 if (requestCode == Constants.REQUEST_QQ_SHARE) {
                     Tencent.onActivityResultData(requestCode, resultCode, intent, qqShareListener);
-                }
-                if (requestCode == Constants.REQUEST_QQ_FAVORITES) {
-                    Tencent.onActivityResultData(requestCode, resultCode, intent, addToQQFavoritesListener);
                 }
             }
         }
@@ -180,19 +173,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
             case ShareScene.QQ:
                 promise.reject("500","Android 不支持分享文字到 QQ");
                 break;
-            case ShareScene.Favorite:
-                params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_TEXT);
-                params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, appName);
-                params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION, text);
-                params.putString(GameAppOperation.QQFAV_DATALINE_APPNAME, appName);
-                Runnable favoritesRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        mTencent.addToQQFavorites(currentActivity, params, addToQQFavoritesListener);
-                    }
-                };
-                UiThreadUtil.runOnUiThread(favoritesRunnable);
-                break;
             case ShareScene.QQZone:
                 params.putInt(QzoneShare.SHARE_TO_QZONE_KEY_TYPE, QzonePublish.PUBLISH_TO_QZONE_TYPE_PUBLISHMOOD);
                 params.putString(QzoneShare.SHARE_TO_QQ_TITLE, text);
@@ -237,23 +217,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
                     }
                 };
                 UiThreadUtil.runOnUiThread(qqRunnable);
-                break;
-            case ShareScene.Favorite:
-                ArrayList<String> imageUrls = new ArrayList<String>();
-                imageUrls.add(image);
-                params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_IMAGE_TEXT);
-                params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
-                params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION, description);
-                params.putString(GameAppOperation.QQFAV_DATALINE_IMAGEURL,image);
-                params.putString(GameAppOperation.QQFAV_DATALINE_APPNAME, appName);
-                params.putStringArrayList(GameAppOperation.QQFAV_DATALINE_FILEDATA,imageUrls);
-                Runnable favoritesRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        mTencent.addToQQFavorites(currentActivity, params, addToQQFavoritesListener);
-                    }
-                };
-                UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
                 params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE);
@@ -304,22 +267,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
                     }
                 };
                 UiThreadUtil.runOnUiThread(qqRunnable);
-                break;
-            case ShareScene.Favorite:
-                image = processImage(image);
-                params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_DEFAULT);
-                params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
-                params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION,description);
-                params.putString(GameAppOperation.QQFAV_DATALINE_IMAGEURL,image);
-                params.putString(GameAppOperation.QQFAV_DATALINE_URL,url);
-                params.putString(GameAppOperation.QQFAV_DATALINE_APPNAME, appName);
-                Runnable favoritesRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        mTencent.addToQQFavorites(currentActivity, params, addToQQFavoritesListener);
-                    }
-                };
-                UiThreadUtil.runOnUiThread(favoritesRunnable);
                 break;
             case ShareScene.QQZone:
                 image = processImage(image);
@@ -376,23 +323,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
                 };
                 UiThreadUtil.runOnUiThread(qqRunnable);
                 break;
-            case ShareScene.Favorite:
-                image = processImage(image);
-                params.putInt(GameAppOperation.QQFAV_DATALINE_REQTYPE, GameAppOperation.QQFAV_DATALINE_TYPE_DEFAULT);
-                params.putString(GameAppOperation.QQFAV_DATALINE_TITLE, title);
-                params.putString(GameAppOperation.QQFAV_DATALINE_DESCRIPTION,description);
-                params.putString(GameAppOperation.QQFAV_DATALINE_IMAGEURL,image);
-                params.putString(GameAppOperation.QQFAV_DATALINE_URL,url);
-                params.putString(GameAppOperation.QQFAV_DATALINE_APPNAME, appName);
-                params.putString(GameAppOperation.QQFAV_DATALINE_AUDIOURL,flashUrl);
-                Runnable favoritesRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        mTencent.addToQQFavorites(currentActivity, params, addToQQFavoritesListener);
-                    }
-                };
-                UiThreadUtil.runOnUiThread(favoritesRunnable);
-                break;
             case ShareScene.QQZone:
                 image = processImage(image);
                 ArrayList<String> imageUrls = new ArrayList<String>();
@@ -430,9 +360,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
             case ShareScene.QQ:
                 promise.reject("500","Android 不支持分享视频到 QQ");
                 break;
-            case ShareScene.Favorite:
-                promise.reject("500","Android 不支持收藏视频到 QQ");
-                break;
             case ShareScene.QQZone:
                 ArrayList<String> imageUrls = new ArrayList<String>();
                 imageUrls.add(image);
@@ -460,7 +387,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
         final Map<String, Object> constants = new HashMap<>();
         constants.put("QQ", ShareScene.QQ);
         constants.put("QQZone", ShareScene.QQZone);
-        constants.put("Favorite", ShareScene.Favorite);
         return constants;
     }
 
@@ -808,25 +734,6 @@ public class QQSDK extends ReactContextBaseJavaModule {
             mPromise.resolve(true);
         }
 
-    };
-    /**
-     * 添加到QQ收藏监听
-     */
-    IUiListener addToQQFavoritesListener = new IUiListener() {
-        @Override
-        public void onCancel() {
-            mPromise.reject("503",QQFAVORITES_CANCEL);
-        }
-
-        @Override
-        public void onComplete(Object response) {
-            mPromise.resolve(true);
-        }
-
-        @Override
-        public void onError(UiError e) {
-            mPromise.reject("500",e.errorMessage);
-        }
     };
 
     private static byte[] getBytes(InputStream inputStream) throws Exception {
