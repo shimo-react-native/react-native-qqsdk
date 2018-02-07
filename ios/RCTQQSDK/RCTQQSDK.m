@@ -475,7 +475,7 @@ RCT_EXPORT_METHOD(shareVideo:(NSString *)previewUrl
 - (NSData *)processImage:(NSString *)image {
     if ([self isBase64Data:image]) {
         return [[NSData alloc] initWithBase64EncodedString:image options:0];
-    } else if ([image hasPrefix:@"http://"] || [image hasPrefix:@"https://"]) {
+    } else if ([image hasPrefix:@"http://"] || [image hasPrefix:@"https://"] || [image hasPrefix:@"file://"]) {
         NSURL *url = [NSURL URLWithString:image];
         return [NSData dataWithContentsOfURL:url];
     } else {
